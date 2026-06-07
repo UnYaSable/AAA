@@ -1431,6 +1431,9 @@
     const EDIT_STORAGE_KEY = "anniversary-memory-wall-edits-v1";
     const IMAGE_STORAGE_KEY = "anniversary-memory-wall-images-v1";
     const TEXT_BOX_STORAGE_KEY = "anniversary-memory-wall-text-boxes-v1";
+    const EDITOR_OVERRIDE_KEY = "anniversary-editor-enabled-v1";
+    const EDITOR_REQUESTED = new URLSearchParams(window.location.search).get("editor") === "1" || window.location.hash === "#editor";
+    const EDITOR_DEFAULT_ENABLED = EDITOR_REQUESTED;
     const BAKED_EDITS = {
           "kicker-0": "a little door for tonight",
           "main-h1-0": "一周年快乐乖乖",
@@ -1926,6 +1929,7 @@
     function setEditMode(enabled) {
       ensureImageIds();
       document.body.classList.toggle("edit-mode", enabled);
+       document.body.classList.toggle("edit-locked", !enabled);
       const toggle = document.getElementById("edit-toggle");
       if (toggle) {
         toggle.dataset.active = String(enabled);
@@ -2117,6 +2121,13 @@
       renderTextBoxes();
       applySavedEdits();
       applySavedImages();
+       if (!EDITOR_DEFAULT_ENABLED) {
+        document.querySelector(".edit-toolbar")?.classList.add("hidden");
+        setEditMode(false);
+      } else {
+        document.querySelector(".edit-toolbar")?.classList.remove("hidden");
+        setEditMode(true);
+      }
       toggle.addEventListener("click", () => {
         setEditMode(!document.body.classList.contains("edit-mode"));
       });
