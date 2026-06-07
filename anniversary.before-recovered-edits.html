@@ -148,81 +148,6 @@
       box-shadow: 0 0 0 3px var(--rose), 0 0 0 8px rgba(201, 114, 107, 0.14);
     }
 
-    .free-text-layer {
-      inset: 0;
-      pointer-events: none;
-      position: absolute;
-      z-index: 7;
-    }
-
-    .free-text-box {
-      background: rgba(254, 250, 242, 0.94);
-      border: 1px solid rgba(200, 169, 110, 0.52);
-      box-shadow: var(--shadow-card);
-      color: var(--ink);
-      left: 32px;
-      min-height: 72px;
-      min-width: 170px;
-      padding: 16px;
-      position: absolute;
-      top: 32px;
-      width: min(280px, calc(100vw - 48px));
-    }
-
-    .text-box-handle {
-      align-items: center;
-      background: rgba(200, 169, 110, 0.16);
-      color: var(--ink-light);
-      cursor: grab;
-      display: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      height: 26px;
-      justify-content: space-between;
-      left: 0;
-      padding: 0 8px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      user-select: none;
-    }
-
-    .text-box-delete {
-      background: transparent;
-      border: 0;
-      color: var(--rose);
-      font-size: 1rem;
-      min-height: 24px;
-      padding: 0 4px;
-    }
-
-    .text-box-content {
-      font-family: var(--font-body);
-      font-size: 1rem;
-      line-height: 1.45;
-      min-height: 32px;
-      outline: 0;
-    }
-
-    body.edit-mode .free-text-layer,
-    body:not(.edit-mode) .free-text-layer {
-      pointer-events: none;
-    }
-
-    body.edit-mode .free-text-box {
-      cursor: text;
-      pointer-events: auto;
-      padding: 34px 16px 16px;
-    }
-
-    body.edit-mode .free-text-box.is-selected {
-      box-shadow: 0 0 0 2px var(--rose), var(--shadow-card);
-    }
-
-    body.edit-mode .text-box-handle {
-      display: flex;
-    }
-
     .petal-layer {
       inset: 0;
       overflow: hidden;
@@ -609,70 +534,6 @@
       margin: 18px 0 0;
     }
 
-    .hand-grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-top: 20px;
-    }
-
-    .hand-card {
-      background: var(--warm-white);
-      border: 1px solid rgba(200, 169, 110, 0.42);
-      box-shadow: var(--shadow-soft);
-      padding: 10px;
-      text-align: center;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .hand-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .hand-card.is-correct {
-      border-color: var(--sage);
-      box-shadow: 0 0 0 3px rgba(125, 155, 122, 0.18), var(--shadow-soft);
-    }
-
-    .hand-card.is-wrong {
-      border-color: var(--rose);
-      box-shadow: 0 0 0 3px rgba(201, 114, 107, 0.14), var(--shadow-soft);
-    }
-
-    .hand-photo-slot,
-    .hand-card img {
-      aspect-ratio: 1;
-      display: block;
-      object-fit: cover;
-      width: 100%;
-    }
-
-    .hand-photo-slot {
-      align-items: center;
-      background:
-        linear-gradient(135deg, rgba(140, 169, 185, 0.18), rgba(201, 114, 107, 0.12)),
-        var(--cream);
-      display: grid;
-      justify-items: center;
-      overflow: hidden;
-    }
-
-    .hand-photo-slot svg {
-      height: 100%;
-      width: 100%;
-    }
-
-    .hand-guess {
-      background: var(--ink);
-      border: 0;
-      border-radius: 8px;
-      color: var(--warm-white);
-      font-weight: 600;
-      margin-top: 10px;
-      min-height: 42px;
-      width: 100%;
-    }
-
     .snow-path {
       background:
         radial-gradient(circle at 12% 32%, rgba(255, 255, 255, 0.95) 0 3px, transparent 4px),
@@ -968,7 +829,6 @@
       }
 
       .choice-grid,
-      .hand-grid,
       .photo-wall {
         grid-template-columns: 1fr;
       }
@@ -1006,8 +866,6 @@
 <body>
   <div class="edit-toolbar" aria-label="page editor controls">
     <button type="button" id="edit-toggle" aria-pressed="false">Edit</button>
-    <button type="button" id="edit-add-text">Add text box</button>
-    <button type="button" id="edit-delete-text">Delete text box</button>
     <button type="button" id="edit-image">Insert image</button>
     <button type="button" id="edit-save" title="Keeps edits in this browser on this device.">Save browser</button>
     <button type="button" id="edit-download" title="Creates a permanent edited HTML file you can share.">Save HTML file</button>
@@ -1017,7 +875,6 @@
   </div>
   <div class="petal-layer" aria-hidden="true" id="petal-layer"></div>
   <main class="page-shell">
-    <div class="free-text-layer" id="free-text-layer" aria-label="movable text boxes"></div>
     <section class="chapter hero" id="seg-tonight">
       <div class="chapter-inner">
         <p class="kicker">a little door for tonight</p>
@@ -1080,37 +937,23 @@
         </div>
 
         <div class="memory-game">
-          <h3 data-edit-id="finch-hand-game-title">Which hand is mine?</h3>
-          <p class="choice-line" data-edit-id="finch-hand-game-prompt">Three hands from that snowy little universe. Can you find mine?</p>
-          <div class="hand-grid" aria-label="Which hand is mine game">
-            <article class="hand-card" data-hand-card="wrong">
-              <div class="hand-photo-slot" data-image-id="finch-hand-other-1" aria-label="replace with another hand photo">
-                <svg viewBox="0 0 200 200" role="img" aria-label="hand photo placeholder">
-                  <rect width="200" height="200" fill="#f6ead8"/>
-                  <path d="M73 144c-6-28-10-55-9-82 0-8 13-9 15-1l8 43 4-62c1-9 15-9 16 0l4 61 8-51c2-9 15-7 14 2l-3 54 12-25c4-8 16-3 13 6l-17 54c-8 25-56 25-65 1z" fill="#c9726b" opacity=".38"/>
-                </svg>
-              </div>
-              <button class="hand-guess" type="button" data-edit-id="finch-hand-guess-1">This one?</button>
-            </article>
-            <article class="hand-card" data-hand-card="correct">
-              <div class="hand-photo-slot" data-image-id="finch-hand-mine" aria-label="replace with my hand photo">
-                <svg viewBox="0 0 200 200" role="img" aria-label="my hand photo placeholder">
-                  <rect width="200" height="200" fill="#edf3ee"/>
-                  <path d="M74 145c-7-32-10-62-9-88 0-9 14-10 16-1l8 47 5-68c1-10 16-10 17 0l4 67 9-56c2-10 16-8 15 3l-3 58 13-27c4-9 17-4 14 6l-18 58c-9 27-62 28-71 1z" fill="#7d9b7a" opacity=".45"/>
-                  <path d="M74 145c15 14 48 16 71-1" stroke="#2c2416" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
-                </svg>
-              </div>
-              <button class="hand-guess" type="button" data-edit-id="finch-hand-guess-2">This one?</button>
-            </article>
-            <article class="hand-card" data-hand-card="wrong">
-              <div class="hand-photo-slot" data-image-id="finch-hand-other-2" aria-label="replace with another hand photo">
-                <svg viewBox="0 0 200 200" role="img" aria-label="hand photo placeholder">
-                  <rect width="200" height="200" fill="#fefaf2"/>
-                  <path d="M81 148c-9-23-13-50-12-80 0-8 12-9 15-2l8 37 3-54c1-8 14-8 15 0l5 55 8-43c2-8 14-6 14 2l-3 49 10-20c4-7 15-3 13 5l-15 48c-7 24-50 25-61 3z" fill="#8ca9b9" opacity=".42"/>
-                </svg>
-              </div>
-              <button class="hand-guess" type="button" data-edit-id="finch-hand-guess-3">This one?</button>
-            </article>
+          <h3>Find Your Hand</h3>
+          <div class="snow-path" aria-hidden="true">
+            <svg class="snow-person left" viewBox="0 0 80 100" fill="none">
+              <circle cx="38" cy="18" r="11" fill="currentColor"/>
+              <path d="M38 31v34M38 43 18 55M39 43l20 20M38 65 22 92M38 65l17 27" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+            <svg class="snow-person right" viewBox="0 0 80 100" fill="none">
+              <circle cx="38" cy="18" r="11" fill="currentColor"/>
+              <path d="M38 31v34M38 43 18 55M39 43l20 20M38 65 22 92M38 65l17 27" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+            <span class="hand-glow" id="hand-glow"></span>
+          </div>
+          <p class="choice-line">That evening in the snow, more than anything, I wanted to ________ your hand and put it in my ________.</p>
+          <div class="choice-grid">
+            <button class="choice-btn" type="button" data-finch-choice="wrong" data-response="really? that's your guess? 😂">run away from</button>
+            <button class="choice-btn" type="button" data-finch-choice="correct" data-response="你知道吗，我真的好想。">hold</button>
+            <button class="choice-btn" type="button" data-finch-choice="wrong" data-response="lmaoooo">high-five</button>
           </div>
           <p class="choice-response" id="finch-response"></p>
         </div>
@@ -1430,75 +1273,7 @@
     const batchSize = 5;
     const EDIT_STORAGE_KEY = "anniversary-memory-wall-edits-v1";
     const IMAGE_STORAGE_KEY = "anniversary-memory-wall-images-v1";
-    const TEXT_BOX_STORAGE_KEY = "anniversary-memory-wall-text-boxes-v1";
-    const EDITOR_OVERRIDE_KEY = "anniversary-editor-enabled-v1";
-    const EDITOR_REQUESTED = new URLSearchParams(window.location.search).get("editor") === "1" || window.location.hash === "#editor";
-    const EDITOR_DEFAULT_ENABLED = EDITOR_REQUESTED;
-    const BAKED_EDITS = {
-          "kicker-0": "a little door for tonight",
-          "main-h1-0": "一周年快乐乖乖",
-          "date-line-0": "June 67, 2025 → June 67, 2026",
-          "counter-wrap-span-0": "days",
-          "letter-p-0": "Hi poopoo, I bet this is a surprise 嘿嘿嘿",
-          "letter-p-1": "这里有一些充满着我们回忆的小游戏，祝你玩得开心~",
-          "letter-p-2": "Exactly 31526000 seconds, on an beautiful and anxious night,<br><span class=\"zh-copy\">我们把话说开了，也决定了我们要在一起。</span>",
-          "letter-p-3": "And in the daylight that followed — after my confession<br><span class=\"zh-copy\">（抱歉当时真的太太太紧张了，有点不会说话了哈哈哈！大脑一片空白，只有眼前的你）</span><br>— something wonderful and a little terrifying began.",
-          "letter-p-4": "Here we are. One whole year later.",
-          "scroll-cue-span-0": "某些时刻 某些数字会解开我们的回忆 :&gt;<br>p.s. Poopoo don't guess!!! You'll know&nbsp;<br>when it's the right time&nbsp;",
-          "main-h2-0": "Finch",
-          "hint-0": "A little throwback,&nbsp;<div>some nice long conversations&nbsp;</div><div>and a whole lot of decisions.</div>",
-          "kicker-1": "chapter two",
-          "main-h2-1": "Finch <span class=\"zh\">雪里的转折点</span>",
-          "content-copy-p-0": "And we are back here, baby.",
-          "content-copy-p-1": "Remember the snow?",
-          "content-copy-p-2": "This was the first time we had a long conversation in person — and a hug.",
-          "content-copy-p-3": "In our relation-pre-ship, this was known as:<br><strong>THE BIG SCARY SAD CRYING TURNING POINT.</strong>",
-          "content-copy-p-4": "嗯，也是回暖的关键转折点。",
-          "content-copy-p-5": "我猜你一定不知道，我们在雪中走的时候<br>我有多想上去牵住你的手，放进我的口袋里。",
-          "content-copy-p-6": "I don't remember — did we even order anything?",
-          "main-h3-0": "Find Your Hand",
-          "choice-line-0": "That evening in the snow, more than anything, I wanted to ________ your hand and put it in my ________.",
-          "choice-btn-0": "run away from",
-          "choice-btn-1": "hold",
-          "choice-btn-2": "high-five",
-          "caption-0": "Finch snow",
-          "caption-1": "wanted to reach out",
-          "caption-2": "did we order?",
-          "main-h2-2": "好兄弟 在心中!<div>just kidding poopoo</div><div>you are the best gf!</div>",
-          "hint-1": "the food that kept us full (of memories)",
-          "kicker-2": "chapter three",
-          "main-h2-3": "BBQ / Concert Night <span class=\"zh\">第一场演唱会</span>",
-          "content-copy-p-7": "我们第一场一起看的演唱会。",
-          "content-copy-p-8": "你扛着困意陪我来吃烧烤，<br>还遇见了上台的那个小姐姐，<br>and 最最好吃的酸奶皮子。",
-          "content-copy-p-9": "在那以后，没有遇见 any 酸奶 that's remotely comparable.",
-          "content-copy-p-10": "Maybe... it's the experience with you<br>that made it so tasteful~",
-          "main-h3-1": "Build the Perfect Night",
-          "rank-card-span-nth-child-2-0": "Eating BBQ",
-          "rank-card-span-nth-child-2-1": "Sleepy eyes",
-          "rank-card-span-nth-child-2-2": "Concert starts",
-          "rank-card-span-nth-child-2-3": "Girl on stage",
-          "rank-card-span-nth-child-2-4": "酸奶皮子 moment",
-          "rank-card-span-nth-child-2-5": "Walking home",
-          "memory-reveal-0": "This is how I remember it: sleepy but still coming with me, BBQ warmth first, the concert opening up around us, that brave girl on stage, 酸奶皮子 becoming impossible to beat, and then the soft walk home after everything had turned golden.",
-          "caption-3": "concert lights",
-          "caption-4": "BBQ warmth",
-          "caption-5": "still not it",
-          "main-h2-4": "Way Back",
-          "hint-2": "two roads, one sentence",
-          "variant-label-0": "I love you / I loved you",
-          "kicker-3": "way back · version one",
-          "main-h2-5": "99 Reasons <span class=\"zh\">99 个喜欢你的原因</span>",
-          "content-copy-p-11": "One by one. Little gifts. Some serious, some silly, all true.",
-          "final-moment-p-0": "And after all 99, there is still the easiest reason:<br>I love you.",
-          "kicker-4": "way back · version two",
-          "main-h2-6": "A Letter <span class=\"zh\">还在写的那一页</span>",
-          "letter-body-0": "(this page is still being written...)"
-    };
-    const BAKED_IMAGES = {};
-    const BAKED_TEXT_BOXES = [];
     let selectedImageSlot = null;
-    let selectedTextBox = null;
-    let draggingTextBox = null;
     let autosaveTimer = null;
     const EDITABLE_SELECTORS = [
       "main h1",
@@ -1732,9 +1507,9 @@
 
     function readSavedEdits() {
       try {
-        return { ...BAKED_EDITS, ...JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "{}") };
+        return JSON.parse(localStorage.getItem(EDIT_STORAGE_KEY) || "{}");
       } catch (error) {
-        return { ...BAKED_EDITS };
+        return {};
       }
     }
 
@@ -1744,124 +1519,14 @@
 
     function readSavedImages() {
       try {
-        return { ...BAKED_IMAGES, ...JSON.parse(localStorage.getItem(IMAGE_STORAGE_KEY) || "{}") };
+        return JSON.parse(localStorage.getItem(IMAGE_STORAGE_KEY) || "{}");
       } catch (error) {
-        return { ...BAKED_IMAGES };
+        return {};
       }
     }
 
     function writeSavedImages(images) {
       localStorage.setItem(IMAGE_STORAGE_KEY, JSON.stringify(images));
-    }
-
-    function readSavedTextBoxes() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(TEXT_BOX_STORAGE_KEY) || "[]");
-        const map = new Map(BAKED_TEXT_BOXES.map((box) => [box.id, box]));
-        saved.forEach((box) => map.set(box.id, box));
-        return Array.from(map.values());
-      } catch (error) {
-        return [...BAKED_TEXT_BOXES];
-      }
-    }
-
-    function writeSavedTextBoxes(boxes) {
-      localStorage.setItem(TEXT_BOX_STORAGE_KEY, JSON.stringify(boxes));
-    }
-
-    function createTextBoxElement(box) {
-      const element = document.createElement("article");
-      element.className = "free-text-box";
-      element.dataset.textBoxId = box.id;
-      element.style.left = `${box.x}px`;
-      element.style.top = `${box.y}px`;
-      element.style.width = `${box.width || 280}px`;
-      element.innerHTML = `
-        <div class="text-box-handle">
-          <span>move</span>
-          <button class="text-box-delete" type="button" aria-label="delete text box">×</button>
-        </div>
-        <div class="text-box-content" data-text-box-content>${box.html || "Write something..."}</div>
-      `;
-      return element;
-    }
-
-    function renderTextBoxes() {
-      const layer = document.getElementById("free-text-layer");
-      if (!layer) {
-        return;
-      }
-      layer.replaceChildren();
-      readSavedTextBoxes().forEach((box) => {
-        layer.appendChild(createTextBoxElement(box));
-      });
-    }
-
-    function serializeTextBoxes() {
-      return Array.from(document.querySelectorAll(".free-text-box")).map((box) => {
-        const content = box.querySelector("[data-text-box-content]");
-        return {
-          id: box.dataset.textBoxId,
-          x: Math.round(parseFloat(box.style.left) || 0),
-          y: Math.round(parseFloat(box.style.top) || 0),
-          width: Math.round(box.getBoundingClientRect().width || 280),
-          html: content ? content.innerHTML : ""
-        };
-      });
-    }
-
-    function saveTextBoxes() {
-      try {
-        writeSavedTextBoxes(serializeTextBoxes());
-      } catch (error) {
-        setEditorStatus("text box save failed");
-        return false;
-      }
-      return true;
-    }
-
-    function selectTextBox(box) {
-      if (selectedTextBox) {
-        selectedTextBox.classList.remove("is-selected");
-      }
-      selectedTextBox = box;
-      if (selectedTextBox) {
-        selectedTextBox.classList.add("is-selected");
-      }
-    }
-
-    function addTextBox() {
-      if (!document.body.classList.contains("edit-mode")) {
-        setEditMode(true);
-      }
-
-      const shell = document.querySelector(".page-shell");
-      const layer = document.getElementById("free-text-layer");
-      const box = {
-        id: `text-${Date.now()}`,
-        x: 48,
-        y: Math.max(36, Math.round(window.scrollY - shell.offsetTop + 130)),
-        width: 280,
-        html: "Write something..."
-      };
-      const element = createTextBoxElement(box);
-      layer.appendChild(element);
-      selectTextBox(element);
-      setEditMode(true);
-      element.querySelector("[data-text-box-content]").focus();
-      saveTextBoxes();
-      setEditorStatus("text box added");
-    }
-
-    function deleteSelectedTextBox() {
-      if (!selectedTextBox) {
-        setEditorStatus("select a text box");
-        return;
-      }
-      selectedTextBox.remove();
-      selectedTextBox = null;
-      saveTextBoxes();
-      setEditorStatus("text box deleted");
     }
 
     function setEditorStatus(text) {
@@ -1929,20 +1594,12 @@
     function setEditMode(enabled) {
       ensureImageIds();
       document.body.classList.toggle("edit-mode", enabled);
-      document.body.classList.toggle("edit-locked", !enabled);
       const toggle = document.getElementById("edit-toggle");
       if (toggle) {
         toggle.dataset.active = String(enabled);
         toggle.setAttribute("aria-pressed", String(enabled));
       }
       document.querySelectorAll("[data-edit-id]").forEach((element) => {
-        if (enabled) {
-          element.setAttribute("contenteditable", "true");
-        } else {
-          element.removeAttribute("contenteditable");
-        }
-      });
-      document.querySelectorAll("[data-text-box-content]").forEach((element) => {
         if (enabled) {
           element.setAttribute("contenteditable", "true");
         } else {
@@ -1970,10 +1627,6 @@
         }
       } catch (error) {
         setEditorStatus("save failed - use HTML file");
-        return false;
-      }
-
-      if (!saveTextBoxes()) {
         return false;
       }
 
@@ -2075,14 +1728,6 @@
         element.classList.remove("image-selected");
         element.removeAttribute("data-image-id");
       });
-      clone.querySelectorAll(".text-box-handle").forEach((element) => element.remove());
-      clone.querySelectorAll(".free-text-box").forEach((element) => {
-        element.classList.remove("is-selected");
-        element.removeAttribute("data-text-box-id");
-      });
-      clone.querySelectorAll("[data-text-box-content]").forEach((element) => {
-        element.removeAttribute("data-text-box-content");
-      });
       clone.querySelector(".petal-layer")?.replaceChildren();
       clone.querySelector("body")?.classList.remove("edit-mode");
       const source = "<!doctype html>\n" + clone.outerHTML;
@@ -2107,7 +1752,6 @@
       }
       localStorage.removeItem(EDIT_STORAGE_KEY);
       localStorage.removeItem(IMAGE_STORAGE_KEY);
-      localStorage.removeItem(TEXT_BOX_STORAGE_KEY);
       location.reload();
     }
 
@@ -2118,21 +1762,11 @@
       }
       ensureEditableIds();
       ensureImageIds();
-      renderTextBoxes();
       applySavedEdits();
       applySavedImages();
-      if (!EDITOR_DEFAULT_ENABLED) {
-        document.querySelector(".edit-toolbar")?.classList.add("hidden");
-        setEditMode(false);
-      } else {
-        document.querySelector(".edit-toolbar")?.classList.remove("hidden");
-        setEditMode(true);
-      }
       toggle.addEventListener("click", () => {
         setEditMode(!document.body.classList.contains("edit-mode"));
       });
-      document.getElementById("edit-add-text").addEventListener("click", addTextBox);
-      document.getElementById("edit-delete-text").addEventListener("click", deleteSelectedTextBox);
       document.getElementById("edit-image").addEventListener("click", () => {
         if (!document.body.classList.contains("edit-mode")) {
           setEditMode(true);
@@ -2172,65 +1806,9 @@
         selectImageSlot(imageSlot);
         document.getElementById("edit-image-input").click();
       });
-      document.addEventListener("pointerdown", (event) => {
-        const box = event.target.closest(".free-text-box");
-        if (document.body.classList.contains("edit-mode") && box) {
-          selectTextBox(box);
-        }
-
-        const handle = event.target.closest(".text-box-handle");
-        if (!document.body.classList.contains("edit-mode") || !handle) {
-          return;
-        }
-
-        const dragBox = handle.closest(".free-text-box");
-        const shellRect = document.querySelector(".page-shell").getBoundingClientRect();
-        const rect = dragBox.getBoundingClientRect();
-        draggingTextBox = {
-          box: dragBox,
-          offsetX: event.clientX - rect.left,
-          offsetY: event.clientY - rect.top,
-          shellLeft: shellRect.left,
-          shellTop: shellRect.top
-        };
-        handle.setPointerCapture(event.pointerId);
-      });
-      document.addEventListener("pointermove", (event) => {
-        if (!draggingTextBox) {
-          return;
-        }
-
-        event.preventDefault();
-        const x = event.clientX - draggingTextBox.shellLeft - draggingTextBox.offsetX;
-        const y = event.clientY - draggingTextBox.shellTop - draggingTextBox.offsetY;
-        draggingTextBox.box.style.left = `${Math.max(0, Math.round(x))}px`;
-        draggingTextBox.box.style.top = `${Math.max(0, Math.round(y))}px`;
-        setEditorStatus("moving");
-      });
-      document.addEventListener("pointerup", () => {
-        if (!draggingTextBox) {
-          return;
-        }
-        draggingTextBox = null;
-        saveTextBoxes();
-        setEditorStatus("text box saved");
-      });
-      document.addEventListener("click", (event) => {
-        const deleteButton = event.target.closest(".text-box-delete");
-        if (!deleteButton) {
-          return;
-        }
-        event.preventDefault();
-        selectTextBox(deleteButton.closest(".free-text-box"));
-        deleteSelectedTextBox();
-      });
       document.addEventListener("input", (event) => {
         if (event.target.closest("[data-edit-id]")) {
           setEditorStatus("unsaved");
-          scheduleAutosave();
-        }
-        if (event.target.closest("[data-text-box-content]")) {
-          setEditorStatus("unsaved text box");
           scheduleAutosave();
         }
       });
@@ -2264,29 +1842,6 @@
           button.classList.add("correct-picked");
           document.getElementById("hand-glow").classList.add("is-lit");
           celebrateUnlock();
-        }
-      });
-    });
-
-    document.querySelectorAll(".hand-guess").forEach((button) => {
-      button.addEventListener("click", () => {
-        if (document.body.classList.contains("edit-mode")) {
-          return;
-        }
-
-        const card = button.closest(".hand-card");
-        const response = document.getElementById("finch-response");
-        document.querySelectorAll(".hand-card").forEach((item) => {
-          item.classList.remove("is-correct", "is-wrong");
-        });
-
-        if (card.dataset.handCard === "correct") {
-          card.classList.add("is-correct");
-          response.textContent = "对啦，是我的手。你找到我了。";
-          celebrateUnlock();
-        } else {
-          card.classList.add("is-wrong");
-          response.textContent = "不是这只，再看看嘛。";
         }
       });
     });
