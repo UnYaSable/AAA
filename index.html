@@ -895,6 +895,14 @@
       padding-left: 16px;
     }
 
+    #bbq-reveal {
+      display: none !important;
+    }
+
+    #bbq-reveal.is-revealed {
+      display: block !important;
+    }
+
     .wayback-chooser {
       align-items: center;
       display: grid;
@@ -1733,8 +1741,16 @@
         moveRankCard(button.closest(".rank-card"), button.dataset.move);
       });
 
+      const reveal = document.getElementById("bbq-reveal");
+      if (reveal) {
+        reveal.classList.add("hidden");
+        reveal.classList.remove("is-revealed");
+      }
+
       document.getElementById("submit-order").addEventListener("click", () => {
-        document.getElementById("bbq-reveal").classList.remove("hidden");
+        const reveal = document.getElementById("bbq-reveal");
+        reveal.classList.remove("hidden");
+        reveal.classList.add("is-revealed");
         celebrateUnlock();
       });
     }
