@@ -1449,7 +1449,7 @@
     const IMAGE_STORAGE_KEY = "anniversary-memory-wall-images-v1";
     const TEXT_BOX_STORAGE_KEY = "anniversary-memory-wall-text-boxes-v1";
     const EDITOR_OVERRIDE_KEY = "anniversary-editor-enabled-v1";
-    const EDITOR_REQUESTED = new URLSearchParams(window.location.search).get("editor") === "1" || window.location.hash.toLowerCase().includes("editor");
+    const EDITOR_REQUESTED = new URLSearchParams(window.location.search).get("editor") === "1" || window.location.hash === "#editor";
     const EDITOR_DEFAULT_ENABLED = EDITOR_REQUESTED;
     const BAKED_EDITS = {
           "kicker-0": "a little door for tonight",
@@ -2136,34 +2136,7 @@
       location.reload();
     }
 
-    function ensureEditorToolbar() {
-      if (document.querySelector(".edit-toolbar")) {
-        return;
-      }
-
-      const toolbar = document.createElement("div");
-      toolbar.className = "edit-toolbar hidden";
-      toolbar.innerHTML = `
-        <button type="button" id="edit-toggle" aria-pressed="false">Edit</button>
-        <button type="button" id="edit-add-text">Add text</button>
-        <button type="button" id="edit-delete-text">Delete text</button>
-        <button type="button" id="edit-image">Image</button>
-        <button type="button" id="edit-save">Save</button>
-        <button type="button" id="edit-download">Download</button>
-        <button type="button" id="edit-reset">Reset</button>
-        <span class="edit-status" id="edit-status">view mode</span>
-        <input id="edit-image-input" type="file" accept="image/*" hidden>
-      `;
-      document.body.prepend(toolbar);
-    }
-
-    function editorRequestedNow() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("editor") === "1" || window.location.hash.toLowerCase().includes("editor");
-    }
-
     function initializeEditor() {
-      ensureEditorToolbar();
       const toggle = document.getElementById("edit-toggle");
       if (!toggle) {
         return;
@@ -2180,12 +2153,6 @@
         document.querySelector(".edit-toolbar")?.classList.remove("hidden");
         setEditMode(true);
       }
-      window.addEventListener("hashchange", () => {
-        if (editorRequestedNow()) {
-          document.querySelector(".edit-toolbar")?.classList.remove("hidden");
-          setEditMode(true);
-        }
-      });
       toggle.addEventListener("click", () => {
         setEditMode(!document.body.classList.contains("edit-mode"));
       });
